@@ -43,15 +43,21 @@ pub fn add_todo(args: &Vec<String>) {
 
 pub fn remove_todo(args: &Vec<String>) {
     if args.len() == 2 {
-        println!("A todo number must be provided as a second argument");
+        println!("You must provide at least one todo number");
         return;
     }
-    if !super::utils::is_string_numeric(&args[2]) {
-        println!("The second argument must be a number")
+    for arg in &args[2..] {
+        if !super::utils::is_string_numeric(arg) {
+            println!("Make sure to provide numbers for the todos");
+            return;
+        }
     }
 
-    let number: i32 = args[2].trim().parse().expect("Could not get number");
     let todos: Vec<String> = get_todos().expect("Could not read todos");
+    let numbers_to_delete: Vec<i32> = args[2..]
+        .iter()
+        .map(|n| n.parse::<i32>().expect("Could not get number"))
+        .collect();
     let file_path = super::file::get_file_path();
     let file = OpenOptions::new()
         .write(true)
@@ -60,9 +66,10 @@ pub fn remove_todo(args: &Vec<String>) {
         .expect("Could not open file");
 
     for (i, todo) in todos.iter().enumerate() {
-        if number == (i + 1) as i32 {
-            continue;
+        let todo_number = (i + 1) as i32;
+
+        if !numbers_to_delete.contains(&todo_number) {
+            super::file::append_to_file(todo, &file);
         }
-        super::file::append_to_file(todo, &file)
     }
 }
