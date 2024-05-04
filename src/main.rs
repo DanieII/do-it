@@ -3,6 +3,15 @@ mod file;
 mod utils;
 use std::env;
 
+const HELP_MESSAGE: &str = "Doit is a simple cli program for managing tasks
+Commands:
+    - add [TASK]
+        adds a new task
+    - ls
+        lists all tasks
+    - rm [NUMBER/S]
+        removes one or more tasks";
+
 fn main() {
     file::create_file();
     let args: Vec<String> = env::args().collect();
@@ -13,9 +22,9 @@ fn main() {
             "add" => commands::add_todo(&args),
             "ls" => commands::list_todos(),
             "rm" => commands::remove_todo(&args),
-            _ => println!("{} is not an available command", command),
+            "help" | "-h" | "--help" | _ => println!("{}", HELP_MESSAGE),
         }
     } else {
-        println!("doit is a cli written in rust")
+        println!("{}", HELP_MESSAGE)
     }
 }
